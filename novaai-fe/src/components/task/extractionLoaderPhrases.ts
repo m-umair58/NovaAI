@@ -49,8 +49,13 @@ export const EXTRACTION_LOADER_STAGES = [
 ] as const
 
 export function pickRandomPhrase<T>(items: readonly T[], exclude?: T): T {
+  const fallback = items[0]
+  if (fallback === undefined) {
+    throw new Error('pickRandomPhrase requires at least one item')
+  }
+
   const pool = exclude ? items.filter((item) => item !== exclude) : [...items]
-  return pool[Math.floor(Math.random() * pool.length)] ?? items[0]
+  return pool[Math.floor(Math.random() * pool.length)] ?? fallback
 }
 
 export function buildLoaderCaption(verb: string, object: string): string {
