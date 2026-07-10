@@ -1,0 +1,23 @@
+Meeting: Weekly Sync
+Date: 2026-07-10
+Participants: Sarah, James, Priya
+
+---
+
+Sarah: Alright, let's go through what everyone has on their plate this week.
+
+James: I need to finish the Q3 budget report. I'll have it done by Wednesday.
+
+Priya: I can review it after James sends it over. I'll send feedback by Thursday end of day.
+
+Sarah: Perfect. James, can you also set up the client demo environment before Friday?
+
+James: Yes, I'll have that done by Friday morning.
+
+Sarah: Priya, we need the updated onboarding slides for the new hire starting Monday. Can you handle that?
+
+Priya: Absolutely. I'll send the slides by Sunday evening.
+
+Sarah: Great. I'll send out the meeting recap email to the team by today at 5pm.
+
+James: Sounds good. See everyone next week.

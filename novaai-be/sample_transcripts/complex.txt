@@ -1,0 +1,45 @@
+Meeting: Product Roadmap Planning — Q3 Sprint Review
+Date: 2026-07-10
+Participants: Alex (Engineering Lead), Maria (Product), Tom (Design), Lin (QA), Rachel (Marketing)
+
+---
+
+Maria: Let's kick off. We have a packed agenda — sprint review, roadmap priorities, and release prep.
+
+Alex: Before we start, quick note: the authentication refactor from last sprint is fully merged and deployed to staging. That's done.
+
+Maria: Great. Okay, sprint review first. Tom, how did the design work go?
+
+Tom: We completed all the mobile mockups for the dashboard. However, the desktop variants for the settings page still need work. I'll finish those by next Tuesday.
+
+Maria: Perfect. Lin, QA status?
+
+Lin: We ran regression on the new payment flow. Found three bugs — two are already fixed by Alex's team, one is still open. I'll have a detailed bug report ready by end of day today.
+
+Alex: For the open bug — it's a race condition in the checkout service. I'll assign it to Ben and we'll have a fix by Thursday.
+
+Maria: Rachel, any blockers on the marketing side before the release?
+
+Rachel: We need the final feature list from Maria before we can finish the press release. Also, the landing page copy needs sign-off from legal.
+
+Maria: I'll send the finalized feature list to Rachel by tomorrow noon. Rachel, can you follow up with legal about the landing page?
+
+Rachel: Yes, I'll ping legal today and chase a response by Wednesday.
+
+Tom: I also need the brand color tokens updated in Figma before I can finalize the desktop settings screens. Maria, can you approve the new palette?
+
+Maria: I'll approve the Figma palette by this afternoon.
+
+Alex: One more thing — we still need to migrate the legacy API endpoints to v2. That's been on the backlog for two sprints. Lin, can you write test cases for the v2 endpoints once Alex's team completes the migration?
+
+Alex: The migration will be done by Friday. So Lin, if you can write the test cases next Monday?
+
+Lin: Works for me. I'll have the test suite ready by next Monday end of day.
+
+Maria: And Alex, please document the v2 API changes in Confluence so the frontend team isn't blocked.
+
+Alex: Will do — I'll update Confluence by Friday alongside the migration.
+
+Rachel: I think we should also consider adding a blog post about the v2 migration for developer users. Just a thought — no commitment yet.
+
+Maria: Good idea, let's park that for next sprint. Okay, I think that covers everything. See you all Thursday for the mid-sprint check-in.
