@@ -6,13 +6,17 @@ import { Button } from '@/components/common'
 import { EmptyResults } from './EmptyResults'
 import { ExtractionAlerts } from './ExtractionAlerts'
 import { SummaryCards } from './SummaryCards'
+import { TaskEditDialog } from './TaskEditDialog'
 import { TaskTable } from './TaskTable'
 import { TaskToolbar } from './TaskToolbar'
 import {
   filterTasks,
+  getSuggestedOwners,
   getTaskSummary,
   getUniqueOwners,
+  resolveTaskWarnings,
   sortTasks,
+  updateTaskInList,
   type OwnerFilter,
   type PriorityFilter,
   type SortOption,
@@ -25,17 +29,29 @@ export interface TaskDashboardProps {
   tasks: ExtractedTask[]
   loading: boolean
   className?: string
+  editable?: boolean
+  onTasksChange?: (tasks: ExtractedTask[]) => void
 }
 
-export function TaskDashboard({ tasks, loading, className }: TaskDashboardProps) {
+export function TaskDashboard({
+  tasks,
+  loading,
+  className,
+  editable = true,
+  onTasksChange,
+}: TaskDashboardProps) {
   const [search, setSearch] = useState('')
   const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>('all')
   const [warningFilter, setWarningFilter] = useState<WarningFilter>('all')
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all')
   const [sort, setSort] = useState<SortOption>('default')
   const [isSending, setIsSending] = useState(false)
+  const [editingTask, setEditingTask] = useState<ExtractedTask | null>(null)
+
+  const canEdit = editable && Boolean(onTasksChange)
 
   const owners = useMemo(() => getUniqueOwners(tasks), [tasks])
+  const suggestedOwners = useMemo(() => getSuggestedOwners(tasks), [tasks])
   const summary = useMemo(() => getTaskSummary(tasks), [tasks])
 
   const filteredTasks = useMemo(() => {
@@ -74,6 +90,20 @@ export function TaskDashboard({ tasks, loading, className }: TaskDashboardProps)
     }
   }
 
+  const handleTaskSave = (updatedTask: ExtractedTask) => {
+    if (!onTasksChange) return
+    onTasksChange(
+      updateTaskInList(tasks, updatedTask.id, updatedTask),
+    )
+    toast.success('Task updated.')
+  }
+
+  const handleResolveConflicts = (taskId: string) => {
+    if (!onTasksChange) return
+    onTasksChange(resolveTaskWarnings(tasks, taskId))
+    toast.success('Conflicts marked as resolved.')
+  }
+
   return (
     <div
       id="task-dashboard"
@@ -88,6 +118,7 @@ export function TaskDashboard({ tasks, loading, className }: TaskDashboardProps)
             {summary.total} task{summary.total === 1 ? '' : 's'} found
             {filteredTasks.length !== summary.total &&
               ` · showing ${filteredTasks.length}`}
+            {canEdit && ' · click Edit to assign owners or resolve conflicts'}
           </p>
         </div>
 
@@ -139,9 +170,24 @@ export function TaskDashboard({ tasks, loading, className }: TaskDashboardProps)
 
       {showTable && (
         <div className="flex min-h-0 flex-1 flex-col">
-          <TaskTable tasks={filteredTasks} loading={loading} />
+          <TaskTable
+            tasks={filteredTasks}
+            loading={loading}
+            editable={canEdit}
+            onEditTask={setEditingTask}
+            onResolveConflicts={handleResolveConflicts}
+          />
         </div>
       )}
+
+      <TaskEditDialog
+        task={editingTask}
+        suggestedOwners={suggestedOwners}
+        open={editingTask !== null}
+        onClose={() => setEditingTask(null)}
+        onSave={handleTaskSave}
+        onResolveConflicts={handleResolveConflicts}
+      />
     </div>
   )
 }

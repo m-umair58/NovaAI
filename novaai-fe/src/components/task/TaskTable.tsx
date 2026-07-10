@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/common'
+import { Pencil } from 'lucide-react'
 import { DueDateDisplay } from './DueDateDisplay'
 import { TaskCard } from './TaskCard'
 import { TaskPriorityBadge } from './TaskPriorityBadge'
@@ -11,6 +12,9 @@ import type { ExtractedTask } from '@/types/task'
 interface TaskTableProps {
   tasks: ExtractedTask[]
   loading: boolean
+  editable?: boolean
+  onEditTask?: (task: ExtractedTask) => void
+  onResolveConflicts?: (taskId: string) => void
 }
 
 function SkeletonRow({ index }: { index: number }) {
@@ -65,10 +69,10 @@ function OwnerCell({ owner }: { owner: string }) {
 function DesktopTable({
   tasks,
   loading,
-}: {
-  tasks: ExtractedTask[]
-  loading: boolean
-}) {
+  editable = false,
+  onEditTask,
+  onResolveConflicts,
+}: TaskTableProps) {
   return (
     <div className="hidden h-full min-h-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-card shadow-[var(--shadow-card)] md:flex">
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -93,6 +97,11 @@ function DesktopTable({
               <th className="min-w-[14rem] px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted">
                 Conflicts
               </th>
+              {editable && (
+                <th className="w-24 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -131,8 +140,28 @@ function DesktopTable({
                         <TaskStatusBadge task={task} />
                       </td>
                       <td className="px-5 py-5 align-top">
-                        <TaskWarnings warnings={task.warnings} />
+                        <TaskWarnings
+                          warnings={task.warnings}
+                          onResolve={
+                            editable && onResolveConflicts
+                              ? () => onResolveConflicts(task.id)
+                              : undefined
+                          }
+                        />
                       </td>
+                      {editable && onEditTask && (
+                        <td className="px-4 py-4 align-top">
+                          <button
+                            type="button"
+                            onClick={() => onEditTask(task)}
+                            className="inline-flex items-center gap-1.5 rounded-[var(--radius-badge)] border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-hover"
+                            aria-label={`Edit task: ${task.task}`}
+                          >
+                            <Pencil className="size-3.5 shrink-0" aria-hidden="true" />
+                            Edit
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   )
                 })}
@@ -146,10 +175,10 @@ function DesktopTable({
 function MobileCards({
   tasks,
   loading,
-}: {
-  tasks: ExtractedTask[]
-  loading: boolean
-}) {
+  editable = false,
+  onEditTask,
+  onResolveConflicts,
+}: TaskTableProps) {
   if (loading) {
     return (
       <div className="space-y-3 md:hidden">
@@ -173,17 +202,41 @@ function MobileCards({
   return (
     <div className="space-y-3 md:hidden">
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard
+          key={task.id}
+          task={task}
+          editable={editable}
+          onEdit={onEditTask}
+          onResolveConflicts={onResolveConflicts}
+        />
       ))}
     </div>
   )
 }
 
-export function TaskTable({ tasks, loading }: TaskTableProps) {
+export function TaskTable({
+  tasks,
+  loading,
+  editable = false,
+  onEditTask,
+  onResolveConflicts,
+}: TaskTableProps) {
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <DesktopTable tasks={tasks} loading={loading} />
-      <MobileCards tasks={tasks} loading={loading} />
+      <DesktopTable
+        tasks={tasks}
+        loading={loading}
+        editable={editable}
+        onEditTask={onEditTask}
+        onResolveConflicts={onResolveConflicts}
+      />
+      <MobileCards
+        tasks={tasks}
+        loading={loading}
+        editable={editable}
+        onEditTask={onEditTask}
+        onResolveConflicts={onResolveConflicts}
+      />
     </div>
   )
 }

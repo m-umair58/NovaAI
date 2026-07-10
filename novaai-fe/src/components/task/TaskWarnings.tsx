@@ -1,16 +1,18 @@
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface TaskWarningsProps {
   warnings: string[]
   compact?: boolean
   className?: string
+  onResolve?: () => void
 }
 
 export function TaskWarnings({
   warnings,
   compact = false,
   className,
+  onResolve,
 }: TaskWarningsProps) {
   if (warnings.length === 0) {
     return (
@@ -34,7 +36,7 @@ export function TaskWarnings({
   }
 
   return (
-    <div className={cn('flex flex-col gap-4', className)}>
+    <div className={cn('flex flex-col gap-3', className)}>
       {warnings.map((warning) => (
         <div
           key={warning}
@@ -47,6 +49,16 @@ export function TaskWarnings({
           <span className="min-w-0 flex-1">{warning}</span>
         </div>
       ))}
+      {onResolve && (
+        <button
+          type="button"
+          onClick={onResolve}
+          className="inline-flex items-center gap-1.5 self-start rounded-[var(--radius-badge)] border border-success/30 bg-success/10 px-2.5 py-1.5 text-xs font-medium text-success hover:bg-success/15"
+        >
+          <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+          Mark resolved
+        </button>
+      )}
     </div>
   )
 }

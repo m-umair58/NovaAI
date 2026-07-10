@@ -1,4 +1,4 @@
-import { User } from 'lucide-react'
+import { Pencil, User } from 'lucide-react'
 import { DueDateDisplay } from './DueDateDisplay'
 import { TaskPriorityBadge } from './TaskPriorityBadge'
 import { TaskStatusBadge } from './TaskStatusBadge'
@@ -9,9 +9,17 @@ import type { ExtractedTask } from '@/types/task'
 
 interface TaskCardProps {
   task: ExtractedTask
+  editable?: boolean
+  onEdit?: (task: ExtractedTask) => void
+  onResolveConflicts?: (taskId: string) => void
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({
+  task,
+  editable = false,
+  onEdit,
+  onResolveConflicts,
+}: TaskCardProps) {
   const unassigned = isUnassignedOwner(task.owner)
   const needsReview = hasWarnings(task)
 
@@ -28,7 +36,20 @@ export function TaskCard({ task }: TaskCardProps) {
         <p className="text-sm font-semibold leading-relaxed text-foreground">
           {task.task}
         </p>
-        <TaskPriorityBadge priority={task.priority} />
+        <div className="flex shrink-0 items-center gap-2">
+          {editable && onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(task)}
+              className="inline-flex items-center gap-1 rounded-[var(--radius-badge)] border border-border bg-surface px-2 py-1 text-xs font-medium text-foreground hover:bg-hover"
+              aria-label={`Edit task: ${task.task}`}
+            >
+              <Pencil className="size-3.5 shrink-0" aria-hidden="true" />
+              Edit
+            </button>
+          )}
+          <TaskPriorityBadge priority={task.priority} />
+        </div>
       </div>
 
       <div className="mt-4 space-y-3 border-t border-border pt-4">
@@ -73,7 +94,14 @@ export function TaskCard({ task }: TaskCardProps) {
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
             Conflicts
           </p>
-          <TaskWarnings warnings={task.warnings} />
+          <TaskWarnings
+            warnings={task.warnings}
+            onResolve={
+              editable && onResolveConflicts
+                ? () => onResolveConflicts(task.id)
+                : undefined
+            }
+          />
         </div>
       </div>
     </article>

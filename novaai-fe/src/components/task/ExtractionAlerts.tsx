@@ -34,8 +34,8 @@ export function ExtractionAlerts({ tasks, className }: ExtractionAlertsProps) {
         </p>
         <p className="text-xs leading-relaxed text-muted">
           Conflicts or ambiguities were detected in owner, due date, priority, or
-          task details. Review the highlighted items before sending to your
-          tracker.
+          task details. Edit each task to assign owners, fix details, or mark
+          conflicts as resolved before sending to your tracker.
         </p>
       </div>
     </div>

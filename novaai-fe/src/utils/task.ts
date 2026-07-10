@@ -1,4 +1,4 @@
-import type { ExtractedTask, TaskPriority } from '@/types/task'
+import type { ExtractedTask, TaskEditValues, TaskPriority } from '@/types/task'
 
 export const UNASSIGNED_OWNER = 'Unassigned'
 export const NO_DUE_DATE = 'No date given'
@@ -168,4 +168,51 @@ export function toActionItemPayload(task: ExtractedTask) {
     priority: task.priority,
     warnings: task.warnings,
   }
+}
+
+export function updateTaskInList(
+  tasks: ExtractedTask[],
+  taskId: string,
+  updates: Partial<ExtractedTask>,
+): ExtractedTask[] {
+  return tasks.map((task) =>
+    task.id === taskId
+      ? { ...task, ...updates, manually_edited: true }
+      : task,
+  )
+}
+
+export function resolveTaskWarnings(
+  tasks: ExtractedTask[],
+  taskId: string,
+): ExtractedTask[] {
+  return updateTaskInList(tasks, taskId, { warnings: [] })
+}
+
+export function applyTaskEdit(
+  task: ExtractedTask,
+  values: TaskEditValues,
+): ExtractedTask {
+  const owner = values.owner.trim() || UNASSIGNED_OWNER
+  const dueDate = values.due_date.trim() || NO_DUE_DATE
+
+  return {
+    ...task,
+    task: values.task.trim(),
+    owner,
+    due_date: dueDate,
+    due_date_text: hasDueDate(dueDate) ? dueDate : NO_DUE_DATE,
+    priority: values.priority,
+    manually_edited: true,
+  }
+}
+
+export function getSuggestedOwners(tasks: ExtractedTask[]): string[] {
+  const owners = new Set<string>()
+  for (const task of tasks) {
+    if (!isUnassignedOwner(task.owner)) {
+      owners.add(task.owner)
+    }
+  }
+  return Array.from(owners).sort((a, b) => a.localeCompare(b))
 }

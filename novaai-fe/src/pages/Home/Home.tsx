@@ -97,6 +97,7 @@ export default function Home() {
             <TaskDashboard
               tasks={extractedTasks}
               loading={isExtracting}
+              onTasksChange={setExtractedTasks}
               className="h-full min-h-[480px]"
             />
           )}

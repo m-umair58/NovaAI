@@ -8,4 +8,12 @@ export interface ExtractedTask {
   due_date_text: string
   priority: TaskPriority
   warnings: string[]
+  manually_edited?: boolean
+}
+
+export interface TaskEditValues {
+  task: string
+  owner: string
+  due_date: string
+  priority: TaskPriority
 }

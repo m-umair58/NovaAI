@@ -75,8 +75,7 @@ export default function HistoryDetailPage() {
             <PageHeader
               title={
                 <>
-                  <span className="block">Past</span>
-                  <span className="block text-hero-accent">Extraction</span>
+                  Past <span className="text-hero-accent">Extraction</span>
                 </>
               }
               subtitle="Reopen a saved analysis with its original transcript and extracted action items."
@@ -94,7 +93,12 @@ export default function HistoryDetailPage() {
               <HistoryTranscriptPanel transcript={detail.transcript} />
 
               <section className="rounded-[var(--radius-card)] border border-border/80 bg-surface/50 p-1 shadow-[var(--shadow-card)]">
-                <TaskDashboard tasks={tasks} loading={false} className="min-h-[480px] p-4 sm:p-5" />
+                <TaskDashboard
+                  tasks={tasks}
+                  loading={false}
+                  onTasksChange={setTasks}
+                  className="min-h-[480px] p-4 sm:p-5"
+                />
               </section>
             </div>
           </>
