@@ -1,11 +1,16 @@
 from datetime import date
 
 from app.core.config import Settings
+from app.core.exceptions import InvalidTranscriptError
 from app.models.requests import ExtractActionItemsRequest
 from app.models.responses import ActionItem, ExtractionResponse
 from app.services.ai.base import AIProvider
 from app.services.date_normalizer import normalize_date
-from app.utils.text import validate_transcript
+from app.utils.text import (
+    unusable_transcript_message,
+    validate_transcript,
+    validate_transcript_readability,
+)
 
 _VALID_PRIORITIES = {"High", "Medium", "Low", "Not specified"}
 
@@ -21,10 +26,17 @@ class ActionItemService:
             self._settings.MIN_TRANSCRIPT_LENGTH,
             self._settings.MAX_TRANSCRIPT_LENGTH,
         )
+        validate_transcript_readability(stripped)
 
         meeting_date_str = str(request.meeting_date) if request.meeting_date else None
-        raw_items = self._provider.extract_action_items(stripped, meeting_date_str)
-        action_items = self._normalize(raw_items, request.meeting_date)
+        extraction = self._provider.extract_action_items(stripped, meeting_date_str)
+
+        if not extraction.is_usable_transcript:
+            raise InvalidTranscriptError(
+                unusable_transcript_message(extraction.rejection_reason)
+            )
+
+        action_items = self._normalize(extraction.action_items, request.meeting_date)
 
         return ExtractionResponse(action_items=action_items, count=len(action_items))
 

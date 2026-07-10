@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from app.core.config import Settings
 from app.core.exceptions import AIProviderError, InvalidAIResponseError
 from app.models.responses import ActionItem
-from app.services.ai.base import AIProvider
+from app.services.ai.base import AIExtractionResult, AIProvider
 from app.services.ai.openai_errors import build_openai_error
 from app.services.ai.prompts import SYSTEM_PROMPT, build_user_message
 
@@ -22,7 +22,9 @@ class _AIActionItem(BaseModel):
 
 
 class _AIExtractionResult(BaseModel):
-    action_items: list[_AIActionItem]
+    is_usable_transcript: bool = True
+    rejection_reason: str | None = None
+    action_items: list[_AIActionItem] = Field(default_factory=list)
 
 
 class OpenAIProvider(AIProvider):
@@ -39,7 +41,7 @@ class OpenAIProvider(AIProvider):
 
     def extract_action_items(
         self, transcript: str, meeting_date: str | None
-    ) -> list[ActionItem]:
+    ) -> AIExtractionResult:
         if self._client is None:
             raise AIProviderError(
                 "AI service is not configured — set OPENAI_API_KEY in your environment",
@@ -91,14 +93,24 @@ class OpenAIProvider(AIProvider):
                 },
             )
 
-        return [
-            ActionItem(
-                task=item.task,
-                owner=item.owner,
-                due_date=None,  # Filled by the service's date normalizer
-                due_date_text=item.due_date_text,
-                priority=item.priority,
-                warnings=item.warnings,
+        if not result.is_usable_transcript:
+            return AIExtractionResult(
+                action_items=[],
+                is_usable_transcript=False,
+                rejection_reason=result.rejection_reason,
             )
-            for item in result.action_items
-        ]
+
+        return AIExtractionResult(
+            action_items=[
+                ActionItem(
+                    task=item.task,
+                    owner=item.owner,
+                    due_date=None,  # Filled by the service's date normalizer
+                    due_date_text=item.due_date_text,
+                    priority=item.priority,
+                    warnings=item.warnings,
+                )
+                for item in result.action_items
+            ],
+            is_usable_transcript=True,
+        )

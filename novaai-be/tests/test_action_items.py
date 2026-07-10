@@ -65,6 +65,15 @@ def test_extract_rejects_too_long_transcript(client):
     assert data["error"]["message"] == "Transcript is too long"
 
 
+def test_extract_rejects_corrupt_transcript(client):
+    response = client.post(EXTRACT_URL, json={"transcript": "@@@@@@@@@@"})
+
+    assert response.status_code == 400
+    data = response.json()
+    assert data["error"]["code"] == "INVALID_TRANSCRIPT"
+    assert "corrupt or unreadable" in data["error"]["message"]
+
+
 def test_dependency_override_support(client_with_service_override):
     response = client_with_service_override.post(
         EXTRACT_URL, json={"transcript": VALID_TRANSCRIPT}

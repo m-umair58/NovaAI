@@ -24,6 +24,7 @@ export default function Home() {
     meetingDate?: string,
   ) => {
     setIsExtracting(true)
+    setExtractedTasks([])
 
     try {
       const { tasks, extractionId } = await extractTranscript(transcript, meetingDate)

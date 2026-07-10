@@ -89,6 +89,24 @@ def test_timeout_returns_502(test_settings):
     assert "timed out" in data["error"]["message"]
 
 
+def test_unusable_transcript_returns_400(test_settings):
+    client = _make_client(
+        test_settings,
+        MockAIProvider(
+            items=[],
+            is_usable_transcript=False,
+            rejection_reason="The transcript does not contain a readable meeting conversation.",
+        ),
+    )
+
+    response = client.post(EXTRACT_URL, json={"transcript": VALID_TRANSCRIPT})
+
+    assert response.status_code == 400
+    data = response.json()
+    assert data["error"]["code"] == "INVALID_TRANSCRIPT"
+    assert "readable meeting conversation" in data["error"]["message"]
+
+
 def test_empty_result_returns_empty_list(test_settings):
     client = _make_client(test_settings, MockAIProvider(items=[]))
 

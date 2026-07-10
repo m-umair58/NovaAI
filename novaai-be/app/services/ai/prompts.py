@@ -91,7 +91,29 @@ Priority corrections and conflicts:
 - Use the clearest and most complete final description after merging and corrections.
 - If contradictory task instructions are unresolved, add a warning describing the contradiction.
 
+## Transcript quality
+
+Before extracting action items, decide whether the transcript is usable.
+
+Set is_usable_transcript to false when the text is:
+- Corrupt, garbled, or unreadable (encoding errors, random characters, binary data)
+- Not a meeting or conversation transcript (code dumps, filler text, repeated nonsense)
+- Too fragmented to understand as dialogue or meeting notes
+
+When is_usable_transcript is false:
+- Set rejection_reason to a clear, user-friendly explanation of what is wrong
+- Return an empty action_items list
+
+When is_usable_transcript is true:
+- Set rejection_reason to null
+- Extract action items normally (an empty list is valid for meetings with no tasks)
+
 ## Output format
+
+For each response, return:
+  - is_usable_transcript: whether the transcript can be processed
+  - rejection_reason: user-friendly explanation when unusable; otherwise null
+  - action_items: the extracted action items
 
 For each action item, return exactly:
   - task: a concise description of what needs to be done
