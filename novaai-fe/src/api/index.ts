@@ -4,5 +4,5 @@ export {
   TranscriptExtractionError,
   type ExtractResult,
 } from './transcript.api'
-export { deleteExtraction, getExtraction, HistoryError, listExtractions } from './history.api'
+export { deleteExtraction, getExtraction, HistoryError, listExtractions, saveExtraction } from './history.api'
 export { sendToTracker, TrackerSendError } from './tracker.api'

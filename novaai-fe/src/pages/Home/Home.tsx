@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { saveExtraction, HistoryError } from '@/api/history.api'
 import {
   extractTranscript,
   TranscriptExtractionError,
@@ -15,7 +16,11 @@ import { cn } from '@/lib/utils'
 
 export default function Home() {
   const [isExtracting, setIsExtracting] = useState(false)
+  const [isSavingHistory, setIsSavingHistory] = useState(false)
   const [extractedTasks, setExtractedTasks] = useState<ExtractedTask[]>([])
+  const [currentTranscript, setCurrentTranscript] = useState('')
+  const [currentMeetingDate, setCurrentMeetingDate] = useState<string | undefined>()
+  const [savedExtractionId, setSavedExtractionId] = useState<string | undefined>()
 
   const hasResults = extractedTasks.length > 0
 
@@ -25,9 +30,12 @@ export default function Home() {
   ) => {
     setIsExtracting(true)
     setExtractedTasks([])
+    setSavedExtractionId(undefined)
+    setCurrentTranscript(transcript)
+    setCurrentMeetingDate(meetingDate)
 
     try {
-      const { tasks, extractionId } = await extractTranscript(transcript, meetingDate)
+      const { tasks } = await extractTranscript(transcript, meetingDate)
       setExtractedTasks(tasks)
 
       const summary = getTaskSummary(tasks)
@@ -40,10 +48,6 @@ export default function Home() {
           `Successfully extracted ${summary.total} task${summary.total === 1 ? '' : 's'}.`,
         )
       }
-
-      if (extractionId) {
-        toast.message('Saved to history.')
-      }
     } catch (error) {
       const message =
         error instanceof TranscriptExtractionError
@@ -52,6 +56,34 @@ export default function Home() {
       toast.error(message)
     } finally {
       setIsExtracting(false)
+    }
+  }
+
+  const handleSaveToHistory = async () => {
+    if (!currentTranscript || extractedTasks.length === 0) return
+
+    setIsSavingHistory(true)
+    try {
+      const extractionId = await saveExtraction(
+        currentTranscript,
+        extractedTasks,
+        currentMeetingDate,
+        savedExtractionId,
+      )
+      setSavedExtractionId(extractionId)
+      toast.success(
+        savedExtractionId
+          ? 'History updated with your latest changes.'
+          : 'Transcript and tasks saved to history.',
+      )
+    } catch (error) {
+      const message =
+        error instanceof HistoryError
+          ? error.message
+          : 'Failed to save to history. Please try again.'
+      toast.error(message)
+    } finally {
+      setIsSavingHistory(false)
     }
   }
 
@@ -98,6 +130,10 @@ export default function Home() {
               tasks={extractedTasks}
               loading={isExtracting}
               onTasksChange={setExtractedTasks}
+              onSaveToHistory={handleSaveToHistory}
+              isSavingHistory={isSavingHistory}
+              canSaveToHistory={Boolean(currentTranscript && extractedTasks.length > 0)}
+              isHistorySaved={Boolean(savedExtractionId)}
               className="h-full min-h-[480px]"
             />
           )}

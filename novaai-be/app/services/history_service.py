@@ -31,9 +31,13 @@ class HistoryService:
         transcript: str,
         meeting_date: date | None,
         action_items: list[ActionItem],
-    ) -> str | None:
+    ) -> str:
         if not self._client:
-            return None
+            raise ApplicationError(
+                "History storage is not configured",
+                "DATABASE_NOT_CONFIGURED",
+                503,
+            )
 
         try:
             extraction_row: dict[str, Any] = {
@@ -47,25 +51,94 @@ class HistoryService:
             )
             extraction_id = extraction_result.data[0]["id"]
 
-            if action_items:
-                item_rows = [
-                    {
-                        "extraction_id": extraction_id,
-                        "task": item.task,
-                        "owner": item.owner,
-                        "due_date": item.due_date,
-                        "due_date_text": item.due_date_text,
-                        "priority": item.priority,
-                        "warnings": item.warnings,
-                    }
-                    for item in action_items
-                ]
-                self._client.table("action_items").insert(item_rows).execute()
+            self._insert_action_items(extraction_id, action_items)
 
             return extraction_id
+        except ApplicationError:
+            raise
         except Exception as exc:
             logger.exception("Failed to save extraction to Supabase: %s", exc)
-            return None
+            raise ApplicationError(
+                "Failed to save extraction to history",
+                "DATABASE_ERROR",
+                502,
+            ) from exc
+
+    def update_extraction(
+        self,
+        extraction_id: str,
+        transcript: str,
+        meeting_date: date | None,
+        action_items: list[ActionItem],
+    ) -> str:
+        if not self._client:
+            raise ApplicationError(
+                "History storage is not configured",
+                "DATABASE_NOT_CONFIGURED",
+                503,
+            )
+
+        try:
+            existing = (
+                self._client.table("extractions")
+                .select("id")
+                .eq("id", extraction_id)
+                .single()
+                .execute()
+            )
+            if not existing.data:
+                raise ApplicationError(
+                    "Extraction not found",
+                    "NOT_FOUND",
+                    404,
+                )
+
+            self._client.table("extractions").update(
+                {
+                    "transcript": transcript,
+                    "transcript_preview": _preview(transcript),
+                    "meeting_date": meeting_date.isoformat() if meeting_date else None,
+                    "task_count": len(action_items),
+                }
+            ).eq("id", extraction_id).execute()
+
+            self._client.table("action_items").delete().eq(
+                "extraction_id", extraction_id
+            ).execute()
+            self._insert_action_items(extraction_id, action_items)
+
+            return extraction_id
+        except ApplicationError:
+            raise
+        except Exception as exc:
+            logger.exception("Failed to update extraction %s: %s", extraction_id, exc)
+            raise ApplicationError(
+                "Failed to update extraction in history",
+                "DATABASE_ERROR",
+                502,
+            ) from exc
+
+    def _insert_action_items(
+        self,
+        extraction_id: str,
+        action_items: list[ActionItem],
+    ) -> None:
+        if not action_items:
+            return
+
+        item_rows = [
+            {
+                "extraction_id": extraction_id,
+                "task": item.task,
+                "owner": item.owner,
+                "due_date": item.due_date,
+                "due_date_text": item.due_date_text,
+                "priority": item.priority,
+                "warnings": item.warnings,
+            }
+            for item in action_items
+        ]
+        self._client.table("action_items").insert(item_rows).execute()
 
     def list_extractions(self, limit: int = 50) -> list[ExtractionSummary]:
         if not self._client:

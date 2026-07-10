@@ -14,13 +14,11 @@ interface ActionItemResponse {
 
 export interface ExtractResult {
   tasks: ExtractedTask[]
-  extractionId?: string
 }
 
 interface ExtractionResponse {
   action_items: ActionItemResponse[]
   count: number
-  extraction_id?: string | null
 }
 
 interface ApiErrorBody {
@@ -78,7 +76,6 @@ export async function extractTranscript(
     )
     return {
       tasks: data.action_items.map(mapActionItemToTask),
-      extractionId: data.extraction_id ?? undefined,
     }
   } catch (error) {
     throw new TranscriptExtractionError(getErrorMessage(error))

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Loader2, Send } from 'lucide-react'
+import { Loader2, Save, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { sendToTracker, TrackerSendError } from '@/api/tracker.api'
 import { Button } from '@/components/common'
@@ -31,6 +31,10 @@ export interface TaskDashboardProps {
   className?: string
   editable?: boolean
   onTasksChange?: (tasks: ExtractedTask[]) => void
+  onSaveToHistory?: () => Promise<void>
+  isSavingHistory?: boolean
+  canSaveToHistory?: boolean
+  isHistorySaved?: boolean
 }
 
 export function TaskDashboard({
@@ -39,6 +43,10 @@ export function TaskDashboard({
   className,
   editable = true,
   onTasksChange,
+  onSaveToHistory,
+  isSavingHistory = false,
+  canSaveToHistory = false,
+  isHistorySaved = false,
 }: TaskDashboardProps) {
   const [search, setSearch] = useState('')
   const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>('all')
@@ -123,25 +131,53 @@ export function TaskDashboard({
         </div>
 
         {tasks.length > 0 && (
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={loading || isSending}
-            onClick={handleSendToTracker}
-            className="shrink-0"
-          >
-            {isSending ? (
-              <>
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send className="size-4" aria-hidden="true" />
-                Send to Tracker
-              </>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {onSaveToHistory && (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={loading || isSavingHistory || !canSaveToHistory}
+                onClick={() => void onSaveToHistory()}
+                className="shrink-0"
+                title={
+                  isHistorySaved
+                    ? 'Update saved extraction in history'
+                    : 'Save transcript and tasks to history'
+                }
+              >
+                {isSavingHistory ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="size-4" aria-hidden="true" />
+                    {isHistorySaved ? 'Update History' : 'Save to History'}
+                  </>
+                )}
+              </Button>
             )}
-          </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={loading || isSending}
+              onClick={handleSendToTracker}
+              className="shrink-0"
+            >
+              {isSending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="size-4" aria-hidden="true" />
+                  Send to Tracker
+                </>
+              )}
+            </Button>
+          </div>
         )}
       </div>
 

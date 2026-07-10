@@ -1,6 +1,8 @@
 import { isAxiosError } from 'axios'
 import api from './axios'
 import type { ExtractionDetail, ExtractionListResponse } from '@/types/history'
+import type { ExtractedTask } from '@/types/task'
+import { toActionItemPayload } from '@/utils/task'
 
 interface ApiErrorBody {
   error?: {
@@ -56,6 +58,40 @@ export async function deleteExtraction(id: string): Promise<void> {
   } catch (error) {
     throw new HistoryError(
       getErrorMessage(error, 'Failed to delete extraction.'),
+    )
+  }
+}
+
+interface SaveExtractionResponse {
+  extraction_id: string
+}
+
+export async function saveExtraction(
+  transcript: string,
+  tasks: ExtractedTask[],
+  meetingDate?: string,
+  extractionId?: string,
+): Promise<string> {
+  const payload = {
+    transcript,
+    meeting_date: meetingDate,
+    action_items: tasks.map(toActionItemPayload),
+  }
+
+  try {
+    if (extractionId) {
+      const { data } = await api.put<SaveExtractionResponse>(
+        `/history/${extractionId}`,
+        payload,
+      )
+      return data.extraction_id
+    }
+
+    const { data } = await api.post<SaveExtractionResponse>('/history', payload)
+    return data.extraction_id
+  } catch (error) {
+    throw new HistoryError(
+      getErrorMessage(error, 'Failed to save extraction to history.'),
     )
   }
 }

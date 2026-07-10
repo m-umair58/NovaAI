@@ -12,3 +12,9 @@ class ExtractActionItemsRequest(BaseModel):
 
 class SendToTrackerRequest(BaseModel):
     action_items: list[ActionItem]
+
+
+class SaveExtractionRequest(BaseModel):
+    transcript: str
+    meeting_date: date | None = None
+    action_items: list[ActionItem]

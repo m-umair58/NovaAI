@@ -17,7 +17,10 @@ class StoredActionItem(ActionItem):
 class ExtractionResponse(BaseModel):
     action_items: list[ActionItem]
     count: int
-    extraction_id: str | None = None
+
+
+class SaveExtractionResponse(BaseModel):
+    extraction_id: str
 
 
 class ExtractionSummary(BaseModel):

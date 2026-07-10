@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { getExtraction, HistoryError } from '@/api/history.api'
+import { getExtraction, HistoryError, saveExtraction } from '@/api/history.api'
 import { PageHeader } from '@/components/common'
 import {
   HistoryBackLink,
@@ -20,6 +20,7 @@ export default function HistoryDetailPage() {
   const [detail, setDetail] = useState<ExtractionDetail | null>(null)
   const [tasks, setTasks] = useState<ExtractedTask[]>([])
   const [isFetching, setIsFetching] = useState(true)
+  const [isSavingHistory, setIsSavingHistory] = useState(false)
   const loading = Boolean(id) && isFetching
 
   useEffect(() => {
@@ -53,6 +54,29 @@ export default function HistoryDetailPage() {
       cancelled = true
     }
   }, [id])
+
+  const handleSaveToHistory = async () => {
+    if (!detail) return
+
+    setIsSavingHistory(true)
+    try {
+      await saveExtraction(
+        detail.transcript,
+        tasks,
+        detail.meeting_date ?? undefined,
+        detail.id,
+      )
+      toast.success('History updated with your latest changes.')
+    } catch (error) {
+      const message =
+        error instanceof HistoryError
+          ? error.message
+          : 'Failed to update history. Please try again.'
+      toast.error(message)
+    } finally {
+      setIsSavingHistory(false)
+    }
+  }
 
   return (
     <AppLayout>
@@ -97,6 +121,10 @@ export default function HistoryDetailPage() {
                   tasks={tasks}
                   loading={false}
                   onTasksChange={setTasks}
+                  onSaveToHistory={handleSaveToHistory}
+                  isSavingHistory={isSavingHistory}
+                  canSaveToHistory={tasks.length > 0}
+                  isHistorySaved
                   className="min-h-[480px] p-4 sm:p-5"
                 />
               </section>
