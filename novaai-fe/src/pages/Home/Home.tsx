@@ -64,7 +64,7 @@ export default function Home() {
           title={
             <>
               <span className="block">Turn meeting chaos into</span>
-              <span className="block text-gradient-hero">executable tasks.</span>
+              <span className="block text-hero-accent">executable tasks.</span>
             </>
           }
           subtitle="Paste your raw transcript and let our AI engine handle the heavy lifting. We extract owners, deadlines, and priorities with intelligent precision."

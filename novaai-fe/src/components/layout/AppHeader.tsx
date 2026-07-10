@@ -38,8 +38,8 @@ export function AppHeader() {
                   cn(
                     'relative flex items-center px-3 text-sm font-medium transition-colors',
                     isActive
-                      ? 'text-primary'
-                      : 'text-muted hover:text-foreground',
+                      ? 'text-hero-accent'
+                      : 'text-muted-foreground hover:text-foreground',
                   )
                 }
               >
@@ -48,7 +48,7 @@ export function AppHeader() {
                     {item.label}
                     {isActive && (
                       <span
-                        className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary"
+                        className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-hero-accent"
                         aria-hidden="true"
                       />
                     )}

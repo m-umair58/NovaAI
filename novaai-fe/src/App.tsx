@@ -1,6 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import { ThemedToaster } from '@/components/common/ThemedToaster'
 import { Home, History, HistoryDetail } from '@/pages'
+
+function HistoryDetailRoute() {
+  const { id } = useParams()
+  return <HistoryDetail key={id} />
+}
 
 export default function App() {
   return (
@@ -10,7 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/history" element={<History />} />
-            <Route path="/history/:id" element={<HistoryDetail />} />
+            <Route path="/history/:id" element={<HistoryDetailRoute />} />
           </Routes>
         </div>
       </BrowserRouter>

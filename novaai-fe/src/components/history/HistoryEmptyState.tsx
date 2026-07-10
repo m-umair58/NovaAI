@@ -20,10 +20,10 @@ export function HistoryEmptyState() {
         <History className="size-7" aria-hidden="true" />
       </div>
 
-      <h2 className="relative text-xl font-semibold tracking-tight text-foreground">
+      <h2 className="relative text-xl font-semibold tracking-tight text-hero-foreground">
         No extractions saved yet
       </h2>
-      <p className="relative mt-2 max-w-md text-sm leading-relaxed text-muted">
+      <p className="relative mt-2 max-w-md text-sm leading-relaxed text-hero-subtitle">
         Run your first transcript extraction on the dashboard. Saved sessions
         will show up here automatically.
       </p>

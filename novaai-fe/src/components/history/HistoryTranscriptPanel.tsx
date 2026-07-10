@@ -19,14 +19,14 @@ export function HistoryTranscriptPanel({
       )}
     >
       <div className="flex items-center gap-3 border-b border-border/80 bg-surface-container-low/80 px-5 py-4">
-        <div className="flex size-9 items-center justify-center rounded-[var(--radius-button)] bg-primary/10 text-primary">
+        <div className="flex size-9 items-center justify-center rounded-[var(--radius-button)] bg-hero-accent/10 text-hero-accent">
           <FileText className="size-4" aria-hidden="true" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-semibold text-hero-foreground">
             Meeting Transcript
           </h2>
-          <p className="text-xs text-muted">Original source text</p>
+          <p className="text-xs text-hero-subtitle">Original source text</p>
         </div>
       </div>
 

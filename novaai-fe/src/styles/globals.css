@@ -23,9 +23,13 @@
   --card: #ffffff;
   --card-foreground: #1a1b22;
 
-  --foreground: #1a1b22;
+  --foreground: #111827;
   --muted: #464555;
-  --muted-foreground: #777587;
+  --muted-foreground: #6b7280;
+
+  --hero-foreground: #111827;
+  --hero-accent: #5d3fd3;
+  --hero-subtitle: #6b7280;
 
   /* Warm-tinted borders (primary hue @ ~12% opacity) */
   --border: color-mix(in srgb, #3525cd 12%, #c7c4d8);
@@ -116,7 +120,11 @@
 
   --foreground: #f1effa;
   --muted: #b8b4c8;
-  --muted-foreground: #8a8699;
+  --muted-foreground: #9ca3af;
+
+  --hero-foreground: #f9fafb;
+  --hero-accent: #8b5cf6;
+  --hero-subtitle: #9ca3af;
 
   --border: color-mix(in srgb, #c3c0ff 15%, #3d3a48);
   --outline: #8a8699;
@@ -184,6 +192,9 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-accent: var(--hero-accent);
+  --color-hero-subtitle: var(--hero-subtitle);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-container: var(--primary-container);
@@ -409,16 +420,12 @@ h6 {
   color: transparent;
 }
 
-.text-gradient-hero {
-  background: linear-gradient(
-    90deg,
-    var(--primary) 0%,
-    #6d28d9 42%,
-    var(--secondary) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.text-hero-accent {
+  color: var(--hero-accent);
+}
+
+.text-hero-subtitle {
+  color: var(--hero-subtitle);
 }
 
 /* Hero headline scale */

@@ -13,7 +13,7 @@ function HistoryMetaChip({ icon, label, className }: HistoryMetaChipProps) {
     <span
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full border border-border/70',
-        'bg-surface/80 px-2.5 py-1 text-xs font-medium text-muted backdrop-blur-sm',
+        'bg-surface/80 px-2.5 py-1 text-xs font-medium text-hero-subtitle backdrop-blur-sm',
         className,
       )}
     >
@@ -39,17 +39,17 @@ export function HistoryMetaChips({
   return (
     <div className={cn('flex flex-wrap items-center gap-2', className)}>
       <HistoryMetaChip
-        icon={<Calendar className="size-3.5 text-primary" aria-hidden="true" />}
+        icon={<Calendar className="size-3.5 text-hero-accent" aria-hidden="true" />}
         label={createdAt}
       />
       {meetingDate && (
         <HistoryMetaChip
-          icon={<FileText className="size-3.5 text-primary" aria-hidden="true" />}
+          icon={<FileText className="size-3.5 text-hero-accent" aria-hidden="true" />}
           label={`Meeting ${meetingDate}`}
         />
       )}
       <HistoryMetaChip
-        icon={<ListTodo className="size-3.5 text-primary" aria-hidden="true" />}
+        icon={<ListTodo className="size-3.5 text-hero-accent" aria-hidden="true" />}
         label={`${taskCount} task${taskCount === 1 ? '' : 's'}`}
       />
     </div>

@@ -39,7 +39,7 @@ export function HistoryExtractionCard({
           />
 
           <div className="space-y-2">
-            <p className="line-clamp-3 text-sm leading-relaxed text-foreground sm:text-[0.9375rem]">
+            <p className="line-clamp-3 text-sm leading-relaxed text-hero-subtitle sm:text-[0.9375rem]">
               {extraction.transcript_preview}
             </p>
           </div>
