@@ -428,6 +428,82 @@ h6 {
   color: var(--hero-subtitle);
 }
 
+/* Extraction loader */
+.extraction-loader-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(93, 63, 211, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(93, 63, 211, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 20%, transparent 78%);
+  pointer-events: none;
+}
+
+.extraction-loader-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(40px);
+  pointer-events: none;
+  animation: extraction-orb-float 8s ease-in-out infinite;
+}
+
+.extraction-loader-orb--one {
+  top: 12%;
+  left: 14%;
+  width: 9rem;
+  height: 9rem;
+  background: rgba(93, 63, 211, 0.18);
+}
+
+.extraction-loader-orb--two {
+  right: 12%;
+  bottom: 10%;
+  width: 11rem;
+  height: 11rem;
+  background: rgba(79, 70, 229, 0.14);
+  animation-delay: -3s;
+}
+
+.extraction-loader-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  animation: extraction-progress-shimmer 1.8s linear infinite;
+}
+
+@keyframes extraction-orb-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) scale(1.06);
+  }
+}
+
+@keyframes extraction-progress-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .extraction-loader-orb,
+  .extraction-loader-progress::after {
+    animation: none;
+  }
+}
+
 /* Hero headline scale */
 .text-hero {
   font-size: 2.25rem;
